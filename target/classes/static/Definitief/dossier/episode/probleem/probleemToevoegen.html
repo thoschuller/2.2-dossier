@@ -1,0 +1,268 @@
+<!doctype html>
+<html>
+<head>
+    <div class="header"></div>
+
+    <title>Probleem</title>
+  <link href="../../../stylesheet.css" rel="stylesheet" type="text/css"/>    
+  
+  <link href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <script src="/cookie.js"></script>
+</head>
+<body>
+  <div class="navbar">
+        <a href="/dashboard.html">Home</a>
+        <div class="dropdown">
+          <button class="dropbtn">Patient
+          <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
+            <a href="../../../patient/patient.html">Overzicht</a>
+            <a href="../../../patient/patientOpvragen.html">Opvragen</a>
+            <a href="../../../patient/patientToevoegen.html">Toevoegen</a>
+          </div>
+        </div>
+        <div class="dropdown">
+          <button class="dropbtn">Zorgverlener
+            <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
+            <a href="../../../zorgverlener/zorgverlener.html">Overzicht</a>
+            <a href="../../../zorgverlener/zorgverlenerOpvragen.html">Opvragen</a>
+            <a href="../../../zorgverlener/zorgverlenerToevoegen.html">Toevoegen</a> 
+          </div>
+       </div>
+        <div class="dropdown">
+          <button class="dropbtn">Persoon
+            <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
+            <a href="../../../persoon/persoon.html">Overzicht</a>
+            <a href="../../../persoon/persoonOpvragen.html">Opvragen</a>
+            <a href="../../../persoon/persoonToevoegen.html">Toevoegen</a> 
+          </div>
+       </div>
+        <a href="../../dossier.html">Dossier</a>
+      <div class="topnav-right">
+        <a href="/index.html">Uitloggen</a>
+      </div>
+      </div>
+<div class="col-lg-8 mx-auto p-4 py-md-5">
+    <header>
+        <h1>Probleem</h1>
+        <div class="mb-5" id="onderTitel">Hier kunt u een probleem toevoegen</div>
+    </header>
+
+    <hr class="col-3 col-md-2 mb-5">
+    <main>
+
+        <form id="snomed_zoek">
+            <div class="invul">
+                <label for="pre_snomed_naam" class="form-label">Zoek probleem in snomed</label>
+                <textarea class="form-control" onChange="zoekSnomed()" id="pre_snomed_naam"></textarea>
+            </div>
+        </form>
+
+        <form id="keuze">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <label for="SCTID" class="form-label">SCTID</label>
+                    <select onclick="keuze_verander();" id="SCTID">
+                        <option value="">-- Select --</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+
+        <form id="typeForm">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <label for="typeForm" class="form-label">Type</label>
+                    <select onclick="type_verander()" name="type" id="typeSelect">
+                        <option value="diagnose">Diagnose</option>
+                        <option value="symptoom">Symptoom</option>
+                        <option value="bevinding">Bevinding</option>
+                        <option value="klacht">Klacht</option>
+                        <option value="bevinding">Functionele Beperking</option>
+                        <option value="complicatie">Complicatie</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+
+        <form id="formToevoegen">
+            <div class="invul">
+                <label for="probleem_type" class="form-label">Probleem type (getal uit codelijst)</label>
+                <textarea class="form-control" id="probleem_type"></textarea>
+                <label for="beschrijving" class="form-label">Toelichting</label>
+                <textarea class="form-control" id="beschrijving"></textarea>
+                <label for="probleem_begin" class="form-label">Probleem begin (YYYY-MM-DD)</label>
+                <textarea class="form-control" id="probleem_begin"></textarea>
+                <label for="probleem_eind" class="form-label">Probleem eind (YYYY-MM-DD)</label>
+                <textarea class="form-control" id="probleem_eind"></textarea>
+                <label for="ernst" class="form-label">Ernst</label>
+                <textarea class="form-control" id="ernst"></textarea>
+                <label for="probleemstatus" class="form-label">Probleemstatus</label>
+                <textarea class="form-control" id="probleemstatus"></textarea>
+                <label for="probleem_naam" class="form-label">Probleemnaam (naam uit codelijst)</label>
+                <textarea class="form-control" id="probleem_naam"></textarea>
+                <label for="familie_relatie" class="form-label">Familierelatie</label>
+                <textarea class="form-control familie_relatie" id="familie_relatie"></textarea>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary">Verzend</button>
+            </div>
+
+        </form>
+        <div id="result">
+            <pre><code></code></pre>
+        </div>
+    </main>
+</div>
+<script>
+let beschrijving;
+    let ernst;
+    let probleem_begin;
+    let probleem_eind;
+    let probleem_naam;
+    let probleem_type;
+    let probleemstatus;
+  
+    function zoekSnomed() {
+        const naam = $("#pre_snomed_naam").val();
+        let SCTID = document.getElementById('SCTID');
+        SCTID.innerHTML = "";
+        $.getJSON("/snomed-ct", {
+            term: naam,
+        }, function (data) {
+            if (data.items.length == 0) {
+                SCTID.innerHTML = SCTID.innerHTML +
+                    '<option value="' + 0 + '">' + 0 + '</option>';
+            } else {
+                for (let i = 0; i < data.items.length; i++) {
+                    SCTID.innerHTML = SCTID.innerHTML +
+                        '<option value="' + data.items[i].conceptId + '">' + data.items[i].idAndFsnTerm + '</option>';
+                }
+            }
+        });
+        $("#SCTID").value = "-- Select --";
+    };
+    function keuze_verander() {
+        const naam = $("#SCTID").val();
+        if (!(naam === "-- Select --")) {
+            $.getJSON("/snomed-ct", {
+                term: naam,
+            }, function (data) {
+                $("#probleem_naam").val(data.items[0].conceptId);
+                $("#beschrijving").val(data.items[0].fsn.term);
+            })
+        }
+    };
+    function type_verander() {
+        var type = $("#typeSelect").val();
+        $.getJSON("/snomed-ct", {
+            term: type,
+        }, function (data) {
+            $("#probleem_type").val(data.items[0].conceptId);
+        })
+    };
+    var familieProbleem;
+    var episode_id;
+    var familielid_id = "";
+    var p_id = getCookie("p_id");
+
+    window.onload = function () {
+        type_verander();
+        familieProbleem = getCookie("familieProbleem");
+        episode_id = getCookie("episode_id");
+
+        if (!(familieProbleem === "true")) {
+            const onzichtbaar = document.getElementsByClassName("familie_relatie");
+            for (let onzichtbare of onzichtbaar) {
+                onzichtbare.style.visibility = "hidden";
+            }
+        }
+    }
+
+    $("#formToevoegen").submit(function (event) {
+        event.preventDefault();
+        $("#result pre code").html("Bezig met laden...");
+
+         probleem_naam = $("#probleem_naam").val();
+         probleem_type = $("#probleem_type").val();
+         beschrijving = $("#beschrijving").val();
+         probleem_begin = $("#probleem_begin").val();
+         probleem_eind = $("#probleem_eind").val();
+         ernst = $("#ernst").val();
+         probleemstatus = $("#probleemstatus").val();
+        const relatie = $("#familie_relatie").val();
+
+        
+        if (familieProbleem === "true") {
+            var familieCheckQuery = `query MyQuery {
+        familielid(where: {_and: {patient_id: {_eq: ` + p_id + `}, relatie: {_eq: "` + relatie + `"}}}) {
+        familielid_id
+        }
+            }
+        `;
+            $.getJSON("/hasura", {
+                query: familieCheckQuery,
+            }, function (data) {
+                $("#result pre code").html(JSON.stringify(data, null, 2));
+                    try{
+                    familielid_id = data.data.familielid[0].familielid_id;
+                } catch (e) {
+                    var insertFamilielidQuery = `mutation insertFamilielid {
+              insert_familielid(objects: {patient_id: "` + p_id + `", relatie: "` + relatie + `"}) {
+              returning {
+              familielid_id
+              }
+              }
+              }`;
+
+                    $.getJSON("/hasura", {
+                        query: insertFamilielidQuery
+                    }, function (data) {
+                      //  $("#result pre code").html(JSON.stringify(data, null, 2));
+
+                    familielid_id = data.data.insert_familielid.returning[0].familielid_id;
+                      episode_id = "null";
+                      runInsertProbleemQuery();
+                    }).fail(function (xhr, status, error) {
+                        $("#result pre code").html('Error');
+                    });
+                }
+            });
+
+            console.log(familielid_id);
+            console.log("test2");
+        }else{
+          familielid_id = "null;"
+          runInsertProbleemQuery();
+        }
+      
+    });
+
+  function runInsertProbleemQuery(){
+    var insertProbleemQuery = `mutation insertProbleem {
+  insert_probleem_one(object: {beschrijving: "` + beschrijving + `", episode_id: ` + episode_id + `, ernst: ` + ernst + `, familielid_id: ` + familielid_id + `, probleem_begin: "` + probleem_begin + `", probleem_eind: "` + probleem_eind + `", probleem_naam: "` + probleem_naam + `", probleem_type: "` + probleem_type + `", probleemstatus: "` + probleemstatus + `"}){
+    probleem_id
+  }
+}`;
+
+    
+      
+        $.getJSON("/hasura", {
+            query: insertProbleemQuery
+        }, function (data) {
+            //$("#result pre code").html(JSON.stringify(data, null, 2));
+        }).fail(function (xhr, status, error) {
+            $("#result pre code").html('Error');
+        });
+  }
+</script>
+</body>
+</html>

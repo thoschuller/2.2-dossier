@@ -1,0 +1,218 @@
+<!doctype html>
+
+<html>
+
+  <head>
+    <div class="header"></div>
+    
+    <title>Episode</title>
+    <link href="../../stylesheet.css" rel="stylesheet" type="text/css"/>  
+    <link href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <script src="/cookie.js"></script>
+  </head>
+	<body onLoad = "bodyLoad()">	 
+    <div class="navbar">
+        <a href="/dashboard.html">Home</a>
+        <div class="dropdown">
+          <button class="dropbtn">Patient
+          <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
+            <a href="../../patient/patient.html">Overzicht</a>
+            <a href="../../patient/patientOpvragen.html">Opvragen</a>
+            <a href="../../patient/patientToevoegen.html">Toevoegen</a>
+          </div>
+        </div>
+        <div class="dropdown">
+          <button class="dropbtn">Zorgverlener
+            <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
+            <a href="../../zorgverlener/zorgverlener.html">Overzicht</a>
+            <a href="../../zorgverlener/zorgverlenerOpvragen.html">Opvragen</a>
+            <a href="../../zorgverlener/zorgverlenerToevoegen.html">Toevoegen</a> 
+          </div>
+       </div>
+        <div class="dropdown">
+          <button class="dropbtn">Persoon
+            <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
+            <a href="../../persoon/persoon.html">Overzicht</a>
+            <a href="../../persoon/persoonOpvragen.html">Opvragen</a>
+            <a href="../../persoon/persoonToevoegen.html">Toevoegen</a> 
+          </div>
+       </div>
+        <a href="../dossier.html">Dossier</a>
+      <div class="topnav-right">
+        <a href="/index.html">Uitloggen</a>
+      </div>
+      </div>
+    <div class="col-lg-8 mx-auto p-4 py-md-5">
+      <header>
+        <h1>Episode</h1>
+        <div class="mb-3" id="patientEpisode">
+          U bent nu de episode van de geselecteerde patient aan het wijzigen
+        </div>
+      </header>
+    
+      <hr class="col-3 col-md-2 mb-5">
+      
+<main>
+    <!-- UITVOER (zie wel inputs zijn disabled) -->
+        <div class="col-md-6">
+        <form id="form_uitvoer">
+          <div class="mb-3">
+                <label for="naam_uitvoer" class="form-label">Naam van de episode</label>
+                <input type="text" class="form-control" id="naam_uitvoer" >
+              </div>    
+              <div class="mb-3">
+                <label for="behandeling_uitvoer" class="form-label">Behandeling</label>
+                <input type="text" class="form-control" id="behandeling_uitvoer" >
+              </div>
+              <div class="mb-3">
+                <label for="diagnose_uitvoer" class="form-label">Diagnose</label>
+                <input type="text" class="form-control" id="diagnose_uitvoer" >
+              </div>
+              <div class="mb-3">
+                <label for="eindtijd_uitvoer" class="form-label">Eindtijd (YYYY-MM-DD)</label>
+                <input type="text" class="form-control" id="eindtijd_uitvoer" >
+              </div>
+          <div class="mb-3">
+                <label for="starttijd_uitvoer" class="form-label">Starttijd (YYYY-MM-DD)</label>
+                <input type="text" class="form-control" id="starttijd_uitvoer" >
+              </div>    
+              <div>
+                <button type="submit" class="btn btn-primary">Verzend updates</button>
+              </div>
+        </form>  
+        </div>
+        <div>
+         <button type="button" onclick="verwijderEpisode();" class="verwijderknop">Verwijder episode</button>
+        </div>
+
+  
+      
+</main>
+</div>
+
+<iframe id="probleemFrame" onlLoad="loadProbleemFrame()" src="https://inleveropdracht-project-mi-x-22-6.mi-x-22.repl.co/Definitief/dossier/episode/probleem/probleem.html" height="600px" width="100%" title="Alle problemen binnen de episode"></iframe>
+  
+
+<script>
+  var naam;
+        $( "#result pre code" ).html("Bezig met laden...");
+    
+          const episode_id = getCookie("episode_id");
+
+          var query_invoer ="query MyQuery {\r\n  episode(where: {episode_id: {_eq: \""+episode_id+"\"}}) {\r\n    behandeling\r\n naam  diagnose\r\n  eindtijd starttijd\r\n}\r\n}";
+
+        $.getJSON("/hasura", {
+          query: query_invoer
+        }, function( data ) {
+          $( "#result pre code" ).html( JSON.stringify(data, null, 2) );
+          
+            $("#behandeling_uitvoer").val("Geen episode gevonden");
+					  $("#diagnose_uitvoer").val("Geen episode gevonden");
+            $("#eindtijd_uitvoer").val("Geen episode gevonden");   
+            $("#starttijd_uitvoer").val("Geen episode gevonden");
+            $("#naam_uitvoer").val("Geen episode gevonden");
+				
+          if (!(data.data.episode[0].behandeling == null)) {
+					  const behandeling_invoer = data.data.episode[0].behandeling;
+            const diagnose_invoer = data.data.episode[0].diagnose;
+				  	const eindtijd_invoer = data.data.episode[0].eindtijd;
+            const starttijd_invoer = data.data.episode[0].eindtijd;
+            naam = data.data.episode[0].naam;
+                        
+            $("#behandeling_uitvoer").val(behandeling_invoer);
+					  $("#diagnose_uitvoer").val(diagnose_invoer);
+            $("#eindtijd_uitvoer").val(eindtijd_invoer);
+            $("#starttijd_uitvoer").val(starttijd_invoer);
+            $("#naam_uitvoer").val(naam);
+          }
+        });
+
+  
+  function bodyLoad() {
+        const p_id = getCookie("p_id");
+
+        var query = `query MyQuery {
+          patient_by_pk(p_id: ` + p_id + `) {
+            persoon {
+              achternaam
+              voornaam
+            }
+          }
+        }`;
+        $.getJSON("/hasura", {
+          query: query
+        }, function( data ) {
+
+          const voornaam = data.data.patient_by_pk.persoon.voornaam;
+          const achternaam = data.data.patient_by_pk.persoon.achternaam;
+          naam = naam;
+          document.getElementById("patientEpisode").textContent = "U bent nu de episode \"" + naam + "\" van " + voornaam + " " + achternaam + " aan het wijzigen.";
+    });
+        }
+
+</script>
+<script>
+  $("#probleemFrame iframe").on("click", "iframe", function(){
+    loadProbleemFrame();
+  })
+function loadProbleemFrame(){
+  var probleemFrame = getElementById("probleemFrame");
+    probleemFrame.height = probleemFrame.contentWindow.document.body.scrollHeight + "px";
+  
+}
+  
+  $( "#form_uitvoer" ).submit(function( event ) {
+        event.preventDefault();
+        const p_id = getCookie("p_id");
+        $( "#result pre code" ).html("Bezig met laden...");
+    
+          const p_id_uitvoer = p_id;
+    
+          const behandeling_uitvoer = $("#behandeling_uitvoer").val();
+          const diagnose_uitvoer = $("#diagnose_uitvoer").val();
+          const eindtijd_uitvoer = $("#eindtijd_uitvoer").val(); 
+          const starttijd_uitvoer = $("#starttijd_uitvoer").val(); 
+          const naam_uitvoer = $("#naam_uitvoer").val(); 
+
+          var query_uitvoer = "mutation MyMutation {\r\n  update_episode(where: {p_id: {_eq: \""+p_id+"\"}}, _set: {behandeling: \""+behandeling_uitvoer+"\", diagnose: \""+diagnose_uitvoer+"\", eindtijd: \""+eindtijd_uitvoer+"\", naam: \""+naam_uitvoer+"\", starttijd: \"" + starttijd_uitvoer + "\"}) {\r\n    returning {\r\n      p_id\r\n    }\r\n  }\r\n}\r\n";
+
+
+    
+    $.getJSON("/hasura", {
+        query: query_uitvoer
+      }, function( data ) {
+        $( "#result pre code" ).html( JSON.stringify(data, null, 2) );
+      }).fail(function(xhr, status, error) {
+        $( "#result pre code" ).html('Error');
+      });
+    });
+
+  function verwijderEpisode(){
+    var query_verwijder = `mutation MyMutation {
+  delete_episode_by_pk(episode_id: `+episode_id+`) {
+    episode_id
+  }
+}
+`
+  $.getJSON("/hasura", {
+        query: query_verwijder
+      }, function( data ) {
+        $( "#result pre code" ).html( JSON.stringify(data, null, 2) );
+    window.location.href = "https://inleveropdracht-project-mi-x-22-6.mi-x-22.repl.co/Definitief/dossier/episode/episode.html";
+      }).fail(function(xhr, status, error) {
+        $( "#result pre code" ).html('Error');
+      });
+    });
+  };
+  </script>
+  </body>
+</html>

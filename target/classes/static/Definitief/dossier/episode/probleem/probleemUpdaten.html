@@ -1,0 +1,199 @@
+<!doctype html>
+
+<html>
+
+  <head>
+    <div class="header"></div>
+    
+    <title>Episode</title>
+    <link href="../stylesheet.css" rel="stylesheet" type="text/css"/>  
+    <link href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <script src="/cookie.js"></script>
+  </head>
+	<body>	 
+    <div class="navbar">
+        <a href="/dashboard.html">Home</a>
+        <div class="dropdown">
+          <button class="dropbtn">Patient
+          <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
+            <a href="../../../patient/patient.html">Overzicht</a>
+            <a href="../../../patient/patientOpvragen.html">Opvragen</a>
+            <a href="../../../patient/patientToevoegen.html">Toevoegen</a>
+          </div>
+        </div>
+        <div class="dropdown">
+          <button class="dropbtn">Zorgverlener
+            <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
+            <a href="../../../zorgverlener/zorgverlener.html">Overzicht</a>
+            <a href="../../../zorgverlener/zorgverlenerOpvragen.html">Opvragen</a>
+            <a href="../../../zorgverlener/zorgverlenerToevoegen.html">Toevoegen</a> 
+          </div>
+       </div>
+        <div class="dropdown">
+          <button class="dropbtn">Persoon
+            <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
+            <a href="../../../persoon/persoon.html">Overzicht</a>
+            <a href="../../../persoon/persoonOpvragen.html">Opvragen</a>
+            <a href="../../../persoon/persoonToevoegen.html">Toevoegen</a> 
+          </div>
+       </div>
+        <a href="../../dossier.html">Dossier</a>
+      <div class="topnav-right">
+        <a href="/index.html">Uitloggen</a>
+      </div>
+      </div>
+    <div class="col-lg-8 mx-auto p-4 py-md-5">
+      <header>
+        <h1>Probleem</h1>
+        <div class="mb-5">
+          Hier kunt u een probleem opvragen en vervolgens de gegevens wijzigen
+        </div>
+      </header>
+    
+      <hr class="col-3 col-md-2 mb-5">
+      
+<main>
+    <!-- UITVOER (zie wel inputs zijn disabled) -->
+        <div class="col-md-6">
+        <form id="form_uitvoer">
+              <div class="mb-3">
+                <label for="type_uitvoer" class="form-label">Type</label>
+                <input type="text" class="form-control" id="type_uitvoer" >
+              </div>
+          <div class="mb-3">
+                <label for="naam_uitvoer" class="form-label">Naam</label>
+                <input type="text" class="form-control" id="naam_uitvoer" >
+              </div>
+              <div class="mb-3">
+                <label for="beschrijving_uitvoer" class="form-label">Beschrijving</label>
+                <input type="text" class="form-control" id="beschrijving_uitvoer" >
+              </div>
+          <div class="mb-3">
+                <label for="ernst_uitvoer" class="form-label">Ernst</label>
+                <input type="text" class="form-control" id="ernst_uitvoer" >
+              </div>    
+          <div class="mb-3">
+                <label for="status_uitvoer" class="form-label">Status</label>
+                <input type="text" class="form-control" id="status_uitvoer" >
+              </div>    
+            <div class="mb-3">
+                <label for="begindatum_uitvoer" class="form-label">Begindatum (YYYY-MM-DD)</label>
+                <input type="text" class="form-control" id="begindatum_uitvoer" >
+              </div>
+              <div class="mb-3">
+                <label for="einddatum_uitvoer" class="form-label">Einddatum (YYYY-MM-DD)</label>
+                <input type="text" class="form-control" id="einddatum_uitvoer" >
+              </div>       
+              <div>
+                <button type="submit" class="btn btn-primary">Verzend updates</button>
+              </div>
+         
+        </form>  
+        </div>
+        <div>
+          <button type="button" onclick="verwijderProbleem();" class="verwijderknop">Verwijder probleem</button>
+          <button type="button" onclick="history.back();">Terug naar overzicht</button>
+        </div>
+</main>
+</div>
+
+<script>
+        $( "#result pre code" ).html("Bezig met laden...");
+    
+          const probleem_id = getCookie("probleem_id");
+  var episode_id;
+
+          var query_invoer =`query MyQuery {
+  probleem_by_pk(probleem_id: `+probleem_id+`) {
+    probleemstatus
+    probleem_type
+    probleem_naam
+    probleem_eind
+    probleem_begin
+    ernst
+    beschrijving
+    episode_id
+  }
+}
+
+`;
+
+        $.getJSON("/hasura", {
+          query: query_invoer
+        }, function( data ) {
+          $( "#result pre code" ).html( JSON.stringify(data, null, 2) );
+          
+				
+          $("#type_uitvoer").val(data.data.probleem_by_pk.probleem_type);
+          $("#naam_uitvoer").val(data.data.probleem_by_pk.probleem_naam);
+          $("#beschrijving_uitvoer").val(data.data.probleem_by_pk.beschrijving);
+          $("#ernst_uitvoer").val(data.data.probleem_by_pk.ernst);
+          $("#status_uitvoer").val(data.data.probleem_by_pk.probleemstatus);
+          $("#begindatum_uitvoer").val(data.data.probleem_by_pk.probleem_begin);
+          $("#einddatum_uitvoer").val(data.data.probleem_by_pk.probleem_eind);
+
+          episode_id = data.data.probleem_by_pk.episode_id;
+          
+        });
+
+  $( "#form_uitvoer" ).submit(function( event ) {
+        event.preventDefault();
+        
+        $( "#result pre code" ).html("Bezig met laden...");
+    
+    
+          
+          const type = $("#eindtijd_uitvoer").val(); 
+          const naam = $("#eindtijd_uitvoer").val(); 
+          const beschrijving = $("#eindtijd_uitvoer").val(); 
+          const ernst = $("#eindtijd_uitvoer").val(); 
+          const status = $("#eindtijd_uitvoer").val(); 
+          const begindatum = $("#eindtijd_uitvoer").val(); 
+          const einddatum = $("#eindtijd_uitvoer").val(); 
+
+          var query_uitvoer = `mutation MyMutation {
+  update_probleem_by_pk(pk_columns: {probleem_id: `+probleem_id+`}, _set: {beschrijving: "`+beschrijving+`", ernst: `+ernst+`, probleem_begin: "`+begindatum+`", probleem_eind: "`+einddatum+`", probleem_naam: `+naam+`, probleem_type: `+type+`, probleemstatus: "`+status+`"})
+  {
+  probleem_id
+  }
+}}`;
+    
+    $.getJSON("/hasura", {
+        query: query_uitvoer
+      }, function( data ) {
+      }).fail(function(xhr, status, error) {
+      });
+    });
+
+  function verwijderProbleem(){
+    var query_verwijder = `mutation MyMutation {
+  delete_probleem_by_pk(probleem_id: `+probleem_id+`) {
+    probleem_id
+  }
+}
+`};
+    $.getJSON("/hasura", {
+        query: query_verwijder
+      }, function( data ) {
+      if(isNaN(episode_id)){
+window.location.replace("/Definitief/dossier/familielid.html");
+      }else{
+window.location.replace("/Definitief/dossier/episode/episodeUpdaten.html");
+      }
+      }).fail(function(xhr, status, error) {
+      });
+    }
+
+  </script>
+        
+  </body>
+</html>

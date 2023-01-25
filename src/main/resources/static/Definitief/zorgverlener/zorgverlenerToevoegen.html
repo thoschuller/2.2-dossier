@@ -1,0 +1,106 @@
+<!doctype html>
+
+<html>
+
+  <head>
+    <div class="header"></div>
+    
+    <title>Zorgverlener</title>    
+    <link href="../stylesheet.css" rel="stylesheet" type="text/css"/>  
+    <link href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <script src="/cookie.js"></script>
+  </head>
+	<body>	 
+      <div class="navbar">
+        <a href="/dashboard.html">Home</a>
+        <div class="dropdown">
+          <button class="dropbtn">Patient
+          <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
+            <a href="../patient/patient.html">Overzicht</a>
+            <a href="../patient/patientOpvragen.html">Opvragen</a>
+            <a href="../patient/patientToevoegen.html">Toevoegen</a>
+          </div>
+        </div>
+        <div class="dropdown">
+          <button class="dropbtn">Zorgverlener
+            <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
+            <a href="../zorgverlener/zorgverlener.html">Overzicht</a>
+            <a href="../zorgverlener/zorgverlenerOpvragen.html">Opvragen</a>
+            <a href="../zorgverlener/zorgverlenerToevoegen.html">Toevoegen</a> 
+          </div>
+       </div>
+        <div class="dropdown">
+          <button class="dropbtn">Persoon
+            <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
+            <a href="../persoon/persoon.html">Overzicht</a>
+            <a href="../persoon/persoonOpvragen.html">Opvragen</a>
+            <a href="../persoon/persoonToevoegen.html">Toevoegen</a> 
+          </div>
+       </div>
+        <a href="../dossier/dossier.html">Dossier</a>
+      <div class="topnav-right">
+        <a href="/index.html">Uitloggen</a>
+      </div>
+      </div>
+    <div class="col-lg-8 mx-auto p-4 py-md-5">
+      <header>
+        <h1>Zorgverlener</h1>
+        <div class="mb-5">
+          Hier kunt u zorgverlener toevoegen
+        </div>
+      </header>
+      
+      <hr class="col-3 col-md-2 mb-5">
+      <main>
+     <form id="form">
+          <div class="invul">
+            <label for="big_nr" class="form-label">Big Nummer</label>
+            <textarea class="form-control" id="big_nr" ></textarea>
+            <label for="functie" class="form-label">Functie</label>
+            <textarea class="form-control" id="functie" ></textarea>
+            <label for="specialisme" class="form-label">Specialisme</label>
+            <textarea class="form-control" id="specialisme" ></textarea>
+          </div>
+            <div>
+              <button type="submit" class="btn btn-primary">Verzend</button>
+            </div>
+          </form>
+
+        <div id="result">
+          <pre><code></code></pre>
+        </div>
+
+        
+      </main>
+      <script>
+      $( "#form" ).submit(function( event ) {
+        event.preventDefault();
+
+        
+			  const big_nr = $("#big_nr").val();
+        const functie = $("#functie").val();
+        const specialisme = $("#specialisme").val();
+
+        var query ="mutation MyMutation {\r\n  insert_zorgverlener(objects: {big_nr: \""+big_nr+"\", functie: \""+functie+"\", specialisme: \""+specialisme+"\"}) {\r\n    returning {\r\n      big_nr\r\n    }\r\n  }\r\n}\r\n";
+        
+        $.getJSON("/hasura", {
+          query: query
+        }, function( data ) {
+         // $( "#result pre code" ).html( JSON.stringify(data, null, 2) );
+        }).fail(function(xhr, status, error) {
+          $( "#result pre code" ).html('Error');
+    });
+      });
+     
+    </script>
+	</body>
+</html>

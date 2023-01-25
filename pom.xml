@@ -1,0 +1,73 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.2.2.RELEASE</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>nl.mi_x</groupId>
+	<artifactId>catch22</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>catch22</name>
+	<description>Project template for Mi-X 2.2</description>
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+      <version>2.7.3</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <version>2.7.3</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.24</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20180130</version>
+    </dependency>
+  </dependencies>
+  <build>
+<!--     <plugins>
+      <plugin>
+        <groupId>de.qaware.maven</groupId>
+        <artifactId>go-offline-maven-plugin</artifactId>
+        <version>1.2.5</version>
+        <configuration>
+          <dynamicDependencies>
+            <DynamicDependency>
+              <groupId>org.apache.maven.surefire</groupId>
+              <artifactId>surefire-junit4</artifactId>
+              <version>2.20.1</version>
+              <classifier></classifier>
+              <repositoryType>PLUGIN</repositoryType>
+            </DynamicDependency>
+            <DynamicDependency>
+              <groupId>com.querydsl</groupId>
+              <artifactId>querydsl-apt</artifactId>
+              <version>4.2.1</version>
+              <classifier>jpa</classifier>
+              <repositoryType>MAIN</repositoryType>
+            </DynamicDependency>
+          </dynamicDependencies>
+        </configuration>
+      </plugin>
+    </plugins> -->
+  
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>      
+			</plugin>
+		</plugins>
+  </build>
+</project>

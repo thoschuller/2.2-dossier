@@ -1,0 +1,230 @@
+<!doctype html>
+
+<html>
+
+  <head>
+    <div class="header"></div>
+    
+    <title>Persoon</title> 
+    <link href="../stylesheet.css" rel="stylesheet" type="text/css"/>  
+    <link href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <script src="/cookie.js"></script>
+  </head>
+	<body>	 
+      <div class="navbar">
+        <a href="/dashboard.html">Home</a>
+        <div class="dropdown">
+          <button class="dropbtn">Patient
+          <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
+            <a href="../patient/patient.html">Overzicht</a>
+            <a href="../patient/patientOpvragen.html">Opvragen</a>
+            <a href="../patient/patientToevoegen.html">Toevoegen</a>
+          </div>
+        </div>
+        <div class="dropdown">
+          <button class="dropbtn">Zorgverlener
+            <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
+            <a href="../zorgverlener/zorgverlener.html">Overzicht</a>
+            <a href="../zorgverlener/zorgverlenerOpvragen.html">Opvragen</a>
+            <a href="../zorgverlener/zorgverlenerToevoegen.html">Toevoegen</a> 
+          </div>
+       </div>
+        <div class="dropdown">
+          <button class="dropbtn">Persoon
+            <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
+            <a href="../persoon/persoon.html">Overzicht</a>
+            <a href="../persoon/persoonOpvragen.html">Opvragen</a>
+            <a href="../persoon/persoonToevoegen.html">Toevoegen</a> 
+          </div>
+       </div>
+        <a href="../dossier/dossier.html">Dossier</a>
+      <div class="topnav-right">
+        <a href="/index.html">Uitloggen</a>
+      </div>
+      </div>
+    <div class="col-lg-8 mx-auto p-4 py-md-5">
+      <header>
+        <h1>Persoon</h1>
+        <div class="mb-5">
+          Hier kunt u van de geselecteerde persoon de gegevens wijzigen
+        </div>
+      </header>
+    
+      <hr class="col-3 col-md-2 mb-5">
+      
+<main>
+
+
+    <!-- UITVOER -->
+        <div class="col-md-6">
+        <form id="form_uitvoer">
+              <div class="mb-3">
+                <label for="voornaam_uitvoer" class="form-label">Voornaam</label>
+                <input type="text" class="form-control" id="voornaam_uitvoer" >
+              </div>
+              <div class="mb-3">
+                <label for="achternaam_uitvoer" class="form-label">Achternaam</label>
+                <input type="text" class="form-control" id="achternaam_uitvoer" >
+              </div>
+          <div class="mb-3">
+                <label for="geboortedatum_uitvoer" class="form-label">Geboortedatum (YYYY_MM_DD)</label>
+                <input type="text" class="form-control" id="geboortedatum_uitvoer" >
+              </div>
+          <div class="mb-3">
+                <label for="meerling_uitvoer" class="form-label">Meerling (True of False)</label>
+                <input type="text" class="form-control" id="meerling_uitvoer" >
+              </div>
+          <div class="mb-3">
+                <label for="postcode_uitvoer" class="form-label">Postcode</label>
+                <input type="text" class="form-control" id="postcode_uitvoer" >
+              </div>
+          <div class="mb-3">
+                <label for="woonplaats_uitvoer" class="form-label">Woonplaats</label>
+                <input type="text" class="form-control" id="woonplaats_uitvoer" >
+              </div>
+          <div class="mb-3">
+                <label for="straatnaam_huisnummer_uitvoer" class="form-label">Straatnaam en Huisnummer</label>
+                <input type="text" class="form-control" id="straatnaam_huisnummer_uitvoer" >
+              </div>
+          <div class="mb-3">
+                <label for="emailadres_uitvoer" class="form-label">Emailadres</label>
+                <input type="text" class="form-control" id="emailadres_uitvoer" >
+              </div>
+          <div class="mb-3">
+                <label for="telefoonnummer_uitvoer" class="form-label">Telefoonnummer</label>
+                <input type="text" class="form-control" id="telefoonnummer_uitvoer" >
+              </div>
+          <div class="mb-3">
+                <label for="geslacht_uitvoer" class="form-label">Geslacht</label>
+                <input type="text" class="form-control" id="geslacht_uitvoer" >
+              </div>
+              <div>
+                <button type="submit" class="btn btn-primary">Verzend updates</button>
+              </div>
+        </form> 
+        </div>
+          <div>
+          <button type="button" onclick="verwijderPersoon();" class="verwijderknop">Verwijder persoon</button>
+        </div>
+      
+</main>
+</div>
+
+<script>
+
+  
+        $( "#result pre code" ).html("Bezig met laden...");
+    
+          const p_id_invoer = getCookie("p_id");
+
+          var query_invoer = "query MyQuery {\r\n persoon(where: {p_id: {_eq: \""+p_id_invoer+"\"}}) {\r\n p_id\r\n voornaam\r\n achternaam\r\n geslacht\r\n geboortedatum\r\n meerling\r\n emailadres\r\n telefoonnummer\r\n postcode\r\n straatnaam_huisnummer\r\n woonplaats\r\n}\r\n}";
+
+        $.getJSON("/hasura", {
+          query: query_invoer
+        }, function( data ) {
+          $( "#result pre code" ).html( JSON.stringify(data, null, 2) );
+          
+          
+          $("#voornaam_uitvoer").val("Niemand gevonden");
+				  $("#achternaam_uitvoer").val("Niemand gevonden");
+          $("#geslacht_uitvoer").val("Niemand gevonden");
+          $("#geboortedatum_uitvoer").val("Niemand gevonden");
+          $("#meerling_uitvoer").val("Niemand gevonden");
+          $("#emailadres_uitvoer").val("Niemand gevonden");
+          $("#telefoonnummer_uitvoer").val("Niemand gevonden");
+          $("#postcode_uitvoer").val("Niemand gevonden");
+          $("#straatnaam_huisnummer_uitvoer").val("Niemand gevonden");
+          $("#woonplaats_uitvoer").val("Niemand gevonden");
+				
+					  const voornaam_invoer = data.data.persoon[0].voornaam;
+            const achternaam_invoer = data.data.persoon[0].achternaam;
+            const geslacht_invoer = data.data.persoon[0].geslacht;
+            const geboortedatum_invoer = data.data.persoon[0].geboortedatum;
+            const meerling_invoer = data.data.persoon[0].meerling;
+            const emailadres_invoer = data.data.persoon[0].emailadres;
+            const telefoonnummer_invoer = data.data.persoon[0].telefoonnummer;
+            const postcode_invoer = data.data.persoon[0].postcode;
+            const straatnaam_huisnummer_invoer = data.data.persoon[0].straatnaam_huisnummer;
+            const woonplaats_invoer = data.data.persoon[0].woonplaats;
+				  	
+            
+					$("#voornaam_uitvoer").val(voornaam_invoer);
+				  $("#achternaam_uitvoer").val(achternaam_invoer);
+          $("#geslacht_uitvoer").val(geslacht_invoer);
+          $("#geboortedatum_uitvoer").val(geboortedatum_invoer);
+          $("#meerling_uitvoer").val(meerling_invoer);
+          $("#emailadres_uitvoer").val(emailadres_invoer);
+          $("#telefoonnummer_uitvoer").val(telefoonnummer_invoer);
+          $("#postcode_uitvoer").val(postcode_invoer);
+          $("#straatnaam_huisnummer_uitvoer").val(straatnaam_huisnummer_invoer);
+          $("#woonplaats_uitvoer").val(woonplaats_invoer);
+
+          
+        });
+
+</script>
+<script>
+  $( "#form_uitvoer" ).submit(function( event ) {
+        event.preventDefault();
+        $( "#result pre code" ).html("Bezig met laden...");
+    
+          const p_id_uitvoer = getCookie("p_id");
+    
+          const voornaam_uitvoer = $("#voornaam_uitvoer").val();
+          const achternaam_uitvoer = $("#achternaam_uitvoer").val();
+          const geslacht_uitvoer = $("#geslacht_uitvoer").val();
+    const geboortedatum_uitvoer = $("#geboortedatum_uitvoer").val();
+    const meerling_uitvoer = $("#meerling_uitvoer").val();
+    const emailadres_uitvoer = $("#emailadres_uitvoer").val();
+    const telefoonnummer_uitvoer = $("#telefoonnummer_uitvoer").val();
+    const postcode_uitvoer = $("#postcode_uitvoer").val();
+    const straatnaam_huisnummer_uitvoer = $("#straatnaam_huisnummer_uitvoer").val();
+    const woonplaats_uitvoer = $("#woonplaats_uitvoer").val();
+        
+
+         var query_uitvoer = "mutation MyMutation {\r\n  update_persoon(where: {p_id: {_eq: \""+p_id_uitvoer+"\"}}, _set: {voornaam: \""+voornaam_uitvoer+"\", achternaam: \""+achternaam_uitvoer+"\", geslacht: \""+geslacht_uitvoer+"\", geboortedatum: \""+geboortedatum_uitvoer+"\", meerling: \""+meerling_uitvoer+"\", emailadres: \""+emailadres_uitvoer+"\", telefoonnummer: \""+telefoonnummer_uitvoer+"\", postcode: \""+postcode_uitvoer+"\", straatnaam_huisnummer: \""+straatnaam_huisnummer_uitvoer+ "\", woonplaats: \""+woonplaats_uitvoer+"\"}) {\r\n    returning {\r\n      p_id\r\n    }\r\n  }\r\n}\r\n";
+
+
+    
+    $.getJSON("/hasura", {
+        query: query_uitvoer
+      }, function( data ) {
+        $( "#result pre code" ).html( JSON.stringify(data, null, 2) );
+      window.location.href = "https://inleveropdracht-project-mi-x-22-6.mi-x-22.repl.co/Definitief/persoon/persoon.html";
+      }).fail(function(xhr, status, error) {
+        $( "#result pre code" ).html('Error');
+      });
+    });
+
+  function verwijderPersoon(){
+
+    const p_id = getCookie("p_id");
+    
+    var query_verwijder = `mutation MyMutation {
+  delete_persoon_by_pk(p_id: `+p_id+`) {
+    p_id
+  }
+}
+`
+  $.getJSON("/hasura", {
+        query: query_verwijder
+      }, function( data ) {
+        $( "#result pre code" ).html( JSON.stringify(data, null, 2) );
+    window.location.href = "https://inleveropdracht-project-mi-x-22-6.mi-x-22.repl.co/Definitief/persoon/persoon.html";
+      }).fail(function(xhr, status, error) {
+        $( "#result pre code" ).html('Error');
+      });
+  };
+  </script>
+        
+  </body>
+</html>

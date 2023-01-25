@@ -1,0 +1,131 @@
+<!doctype html>
+
+<html>
+  
+  
+  <head>
+    <div class="header"> </div>
+    
+    <title>Zorgverlener</title>
+    <link href="../stylesheet.css" rel="stylesheet" type="text/css"/>  
+    <link href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <script src="/cookie.js"></script>
+  </head>
+	<body>
+    <div class="navbar">
+        <a href="/dashboard.html">Home</a>
+        <div class="dropdown">
+          <button class="dropbtn">Patient
+          <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
+            <a href="../patient/patient.html">Overzicht</a>
+            <a href="../patient/patientOpvragen.html">Opvragen</a>
+            <a href="../patient/patientToevoegen.html">Toevoegen</a>
+          </div>
+        </div>
+        <div class="dropdown">
+          <button class="dropbtn">Zorgverlener
+            <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
+            <a href="../zorgverlener/zorgverlener.html">Overzicht</a>
+            <a href="../zorgverlener/zorgverlenerOpvragen.html">Opvragen</a>
+            <a href="../zorgverlener/zorgverlenerToevoegen.html">Toevoegen</a> 
+          </div>
+       </div>
+        <div class="dropdown">
+          <button class="dropbtn">Persoon
+            <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
+            <a href="../persoon/persoon.html">Overzicht</a>
+            <a href="../persoon/persoonOpvragen.html">Opvragen</a>
+            <a href="../persoon/persoonToevoegen.html">Toevoegen</a> 
+          </div>
+       </div>
+        <a href="../dossier/dossier.html">Dossier</a>
+      <div class="topnav-right">
+        <a href="/index.html">Uitloggen</a>
+      </div>
+      </div>
+    <div class="col-lg-8 mx-auto p-4 py-md-5">
+      <header>
+        <h1>Zorgverlener</h1>
+        <div class="mb-5">
+          Hier kunt u alle zorgverleners zien.
+        </div>
+      </header>
+      <hr class="col-3 col-md-2 mb-5">
+      <main>
+        <table id="zorgverlener" class="table table-hover"></table>
+
+        <div id="result">
+          <pre><code></code></pre>
+        </div>
+      </main>
+
+    <script>
+      $( "document" ).ready(function (event) {        
+        const zorgverlenerEndpoint = '/hasura';
+        const query = `{
+             zorgverlener {
+            big_nr
+            functie
+            specialisme
+        }
+          }`;
+        
+        var table = $('#zorgverlener').DataTable( {
+          ajax: {
+            url: zorgverlenerEndpoint,
+            data: {
+              query: query,
+            },
+            dataSrc: function (json) {     
+              return json.data.zorgverlener;
+            }
+          },
+          columns: [
+              {
+                title: 'Big nummer',
+                data: 'big_nr' 
+              },
+              { 
+                title: 'Functie',
+                data: 'functie' 
+              },
+              { 
+                title: 'Specialisme',
+                data: 'specialisme' 
+              },
+              {
+                data: null,
+                defaultContent: '<button class="wijzig" type="button" >wijzigen</button>'
+              },{
+                data: null,
+                defaultContent: '<button class="contact" type="button" >contacten</button>'
+              },
+          ]
+      } );
+$('#zorgverlener tbody').on('click', 'button.wijzig', function ()   {
+    
+        var big_nr = table.row($(this).parents('tr')).data().big_nr;
+        setCookie("big_nr", big_nr);
+        window.location.href = 'zorgverlenerUpdaten.html';
+    });
+
+  $('#zorgverlener tbody').on('click', 'button.contact', function ()   {
+    
+        var big_nr = table.row($(this).parents('tr')).data().big_nr;
+        setCookie("big_nr", big_nr);
+    setCookie("contactZoeker", "zorgverlener");
+        window.location.href = '../contact/contactZorgverlener.html';
+    });
+        });
+    </script>
+	</body>
+</html>

@@ -1,0 +1,169 @@
+<!doctype html>
+
+<html>
+
+  <head>
+    <div class="header"></div>
+    
+    <title>Contact</title>
+    <link href="../stylesheet.css" rel="stylesheet" type="text/css"/>  
+    <link href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <script src="/cookie.js"></script>
+  </head>
+	<body>	 
+      <div class="navbar">
+        <a href="/dashboard.html">Home</a>
+        <div class="dropdown">
+          <button class="dropbtn">Patient
+          <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
+            <a href="../patient/patient.html">Overzicht</a>
+            <a href="../patient/patientOpvragen.html">Opvragen</a>
+            <a href="../patient/patientToevoegen.html">Toevoegen</a>
+          </div>
+        </div>
+        <div class="dropdown">
+          <button class="dropbtn">Zorgverlener
+            <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
+            <a href="../zorgverlener/zorgverlener.html">Overzicht</a>
+            <a href="../zorgverlener/zorgverlenerOpvragen.html">Opvragen</a>
+            <a href="../zorgverlener/zorgverlenerToevoegen.html">Toevoegen</a> 
+          </div>
+       </div>
+        <div class="dropdown">
+          <button class="dropbtn">Persoon
+            <i class="fa fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">
+            <a href="../persoon/persoon.html">Overzicht</a>
+            <a href="../persoon/persoonOpvragen.html">Opvragen</a>
+            <a href="../persoon/persoonToevoegen.html">Toevoegen</a> 
+          </div>
+       </div>
+        <a href="../dossier/dossier.html">Dossier</a>
+      <div class="topnav-right">
+        <a href="/index.html">Uitloggen</a>
+      </div>
+      </div>
+    <div class="col-lg-8 mx-auto p-4 py-md-5">
+      <header>
+        <h1>Contact</h1>
+        <div class="mb-5">
+          Hier kunt u een contact opvragen en vervolgens de gegevens wijzigen
+        </div>
+      </header>
+    
+      <hr class="col-3 col-md-2 mb-5">
+      
+<main>
+
+    <!-- UITVOER -->
+        <div class="col-md-6">
+        <form id="form_uitvoer">
+              <div class="mb-3">
+                <label for="contact_type_uitvoer" class="form-label">Contact type</label>
+                <input type="text" class="form-control" id="contact_type_uitvoer" >
+              </div>
+              <div class="mb-3">
+                <label for="contact_vorm_uitvoer" class="form-label">Contact vorm</label>
+                <input type="text" class="form-control" id="contact_vorm_uitvoer" >
+              </div>
+              <div class="mb-3">
+                <label for="datumtijd_uitvoer" class="form-label">Datum en Tijd</label>
+                <input type="text" class="form-control" id="datumtijd_uitvoer" >
+              </div>
+              <div>
+                <button type="submit" class="btn btn-primary">Verzend update</button>
+              </div>
+        </form>  
+        </div>
+        <div>
+          <button type="button" onclick="verwijderContact();" class="verwijderknop">Verwijder contact</button>
+        </div>
+      
+</main>
+</div>
+
+<script>
+  
+        $( "#result pre code" ).html("Bezig met laden...");
+    
+          const contact_id = getCookie("contact_id");
+
+          var query_invoer ="query MyQuery {\r\n  contact(where: {contact_id: {_eq: \""+contact_id+"\"}}) {\r\n    datumtijd\r\n   contacttype\r\n   contactvorm\r\n}\r\n}";
+
+        $.getJSON("/hasura", {
+          query: query_invoer
+        }, function( data ) {
+          $( "#result pre code" ).html( JSON.stringify(data, null, 2) );
+          
+          
+            $("#contact_type_uitvoer").val("Geen contact gevonden");
+					  $("#contact_vorm_uitvoer").val("Geen contact gevonden");
+            $("#datumtijd_uitvoer").val("Geen contact gevonden");
+            
+          
+				
+					  const contact_type_invoer = data.data.contact[0].contacttype;
+            const contact_vorm_invoer = data.data.contact[0].contactvorm;
+            const datumtijd_invoer = data.data.contact[0].datumtijd;
+				  	
+            
+            $("#contact_type_uitvoer").val(contact_type_invoer);
+					  $("#contact_vorm_uitvoer").val(contact_vorm_invoer);
+            $("#datumtijd_uitvoer").val(datumtijd_invoer);
+          
+          
+        });
+
+
+  $( "#form_uitvoer" ).submit(function( event ) {
+        event.preventDefault();
+        $( "#result pre code" ).html("Bezig met laden...");
+    
+          const contact_id = getCookie("contact_id");
+    
+          const contact_type_uitvoer = $("#contact_type_uitvoer").val();
+          const contact_vorm_uitvoer = $("#contact_vorm_uitvoer").val();
+          const datumtijd_uitvoer = $("#datumtijd_uitvoer").val();
+
+          var query_uitvoer = "mutation MyMutation {\r\n  update_contact(where: {contact_id: {_eq: \""+contact_id+"\"}}, _set: {contacttype: \""+contact_type_uitvoer+"\", contactvorm: \""+contact_vorm_uitvoer+"\", datumtijd: \""+datumtijd_uitvoer+"\"}) {\r\n    returning {\r\n      contact_id\r\n    }\r\n  }\r\n}\r\n";
+
+
+    
+    $.getJSON("/hasura", {
+        query: query_uitvoer
+      }, function( data ) {
+      }).fail(function(xhr, status, error) {
+      });
+    });
+
+  function verwijderContact(){
+
+    const contact_id = getCookie("contact_id");
+    
+    var query_verwijder = `mutation MyMutation {
+  delete_contact_by_pk(contact_id: `+contact_id+`) {
+    contact_id
+  }
+}
+`
+  $.getJSON("/hasura", {
+          query: query_verwijder
+        }, function( data ) {
+          $( "#result pre code" ).html( JSON.stringify(data, null, 2) );
+        }).fail(function(xhr, status, error) {
+          $( "#result pre code" ).html('Error');
+        });
+  
+  };
+  </script>
+        
+  </body>
+</html>
